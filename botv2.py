@@ -6,7 +6,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import pickle
 import pprint
-
+import asyncio
 
 pp = pprint.PrettyPrinter(indent=0)
 
@@ -422,7 +422,7 @@ async def bind_with_chan_txt(ctx, channel_id: int, chan_txt_id: int):
 
 @bot.command(name='del-on-leave',
              help="modifie le gestion des chan txt créent par les chan fils")
-async def del_on_leave(ctx, channel_id: int, to_del: bool):
+async def del_on_leave(ctx, channel_id: int, to_del: bool, delay=0):
     print(f"modify  {channel_id}  (del on leave)")
     guild = ctx.guild
     if guild.id not in guild_tab.keys():
@@ -433,6 +433,7 @@ async def del_on_leave(ctx, channel_id: int, to_del: bool):
         await ctx.send("le chan n'est pas enregistré dans le bot")
     else:
         guild_tab[guild.id]["fork"][channel_id]["del_on_leave"] = to_del
+        guild_tab[guild.id]["fork"][channel_id]["delay"] = delay
         save(guild_tab)
         await ctx.send("mise a jour ok")
 
@@ -543,7 +544,7 @@ async def on_voice_state_update(member, before, after):
         channel_name = channel_name_pattern.format(name)
         if guild.id == 693172975045705819:
             if "English-speaking" in member_role:
-                channel_name = "🇬🇧 " + channel_name
+                channel_name = "*en* " + channel_name
 
         print("creation du canal :" + channel_name + " text will be " + guild_tab[guild.id]["fork"][after.channel.id]["msg_txt"])
         print(f"user role {member_role} , {channel_info['role']}, {len(channel_info['role']) }")
@@ -588,7 +589,13 @@ async def on_voice_state_update(member, before, after):
             to_del = parent_info["del_on_leave"]
         print("ok 1")
         if len(before.channel.members) == 0 or (to_del is True and member.id == current_info["creator"]):
-            print("del voice chan")
+
+            print(f"del voice chan ")
+            if "delay" in parent_info.keys():
+                print(f"wait {parent_info['delay']} seconds")
+                await asyncio.sleep(parent_info['delay'])
+
+
             try:
                 await before.channel.delete()
             except:
