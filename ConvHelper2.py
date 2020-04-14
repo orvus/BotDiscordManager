@@ -11,7 +11,7 @@ import pickle
 
 load_dotenv(dotenv_path=".env")
 
-bot = commands.Bot(command_prefix='$')
+bot = commands.Bot(command_prefix='µ')
 ###############################
 # GLOBAL VARIABLE
 ###############################
@@ -26,7 +26,7 @@ def save_to_react():
         f.write(pickle.dumps(to_react))
 
 def load_to_react():
-    pass
+    return
     global to_react
     with open("react2", "rb") as f:
         to_react = pickle.load(f)
@@ -34,8 +34,6 @@ def load_to_react():
     for k,v in to_react.items():
         print(k,v)
 
-
-bot = commands.Bot(command_prefix='$')
 ################################
 ################################
 ################################
@@ -54,15 +52,31 @@ def getUserFromId(guild, _id):
 ################
 ## GET STATE OF BOT ##
 ## ADD reaction roles ##
-@bot.command(name='role')
-async def add_role(ctx, id_msg, id_salon, emoji, role, type):
-    to_react[int(id_msg)] = {"chan_txt_id": id_salon, "reaction": emoji, "role": role, "type":int(type)}
+@bot.command(name='role2')
+async def add_role(ctx, id_msg : int , emoji, role, type_):
+
+    if id_msg not in to_react.keys():
+        to_react[id_msg] = list()
+    for react in to_react[id_msg]:
+        if react["reaction"] == emoji.id and react["role_name"] == role:
+            break
+    else:
+        to_react[id_msg].append({"reaction": emoji.id, "role_name": role, "type":int(type_)})
     await ctx.send("reaction role added")
     save_to_react()
 
 @bot.command(name='role-del')
-async def del_role(ctx, id_msg):
-    del to_react[int(id_msg)]
+async def del_role(ctx, id_msg, emoji, role):
+    to_del = -1
+    if id_msg not in to_react.keys():
+        await ctx.send("no role register for this message")
+        return
+    for i in range(to_react[id_msg]):
+        if to_react[id_msg][i]["reation"] == emoji.id and to_react[id_msg][i]["role_name"] == role:
+            to_del = i
+            break
+
+    del to_react[id_msg][to_del]
     await ctx.send("reaction role delete")
     save_to_react()
 @bot.command(name='open-conv')
@@ -169,8 +183,11 @@ async def on_raw_reaction_remove(reactionPayload):
     global GUILD
     msg_id = reactionPayload.message_id
     emoji = reactionPayload.emoji
-    user_id = reactionPayload.user_id
     guild_id = reactionPayload.guild_id
+    user_id = reactionPayload.user_id
+    print(f"{discord.utils.get(bot.guilds,id=guild_id).name} <------- TEST")
+
+
 
     if msg_id in to_react.keys():
         if to_react[msg_id]["reaction"] == emoji.name and to_react[msg_id]["type"] in [1, 3]:
