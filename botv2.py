@@ -491,20 +491,26 @@ async def clean_all(ctx):
 
 
 def is_chan_in_forkeur(guild, chan):
-    if chan is None:
-        return False
-    if chan.id in guild_tab[guild.id]["fork"]:
-        return True
-    else:
+    try:
+        if chan is None:
+            return False
+        if chan.id in guild_tab[guild.id]["fork"]:
+            return True
+        else:
+            return False
+    except:
         return False
 
 
 def is_chan_in_created(guild, chan):
-    if chan is None:
-        return False
-    if chan.id in guild_tab[guild.id]["created"]:
-        return True
-    else:
+    try:
+        if chan is None:
+            return False
+        if chan.id in guild_tab[guild.id]["created"]:
+            return True
+        else:
+            return False
+    except:
         return False
 
 
@@ -594,6 +600,17 @@ async def on_voice_state_update(member, before, after):
             if "delay" in parent_info.keys():
                 print(f"wait {parent_info['delay']} seconds")
                 await asyncio.sleep(parent_info['delay'])
+                if member in before.channel.members:
+                    print("still in")
+                    return
+                benevole = None
+                for person in before.channel.members:
+                    if "benevole workshop" in get_values(person,"roles","name"):
+                        benevole = person
+                        break
+                if benevole is not None:
+                    print("benevole in")
+                    return
 
 
             try:
