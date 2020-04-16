@@ -59,26 +59,32 @@ async def add_role(ctx, id_msg : int , emoji, role, type_):
         to_react[id_msg] = list()
     for react in to_react[id_msg]:
         if react["reaction"] == emoji.id and react["role_name"] == role:
+            await ctx.send("role already present for this message")
             break
     else:
         to_react[id_msg].append({"reaction": emoji.id, "role_name": role, "type":int(type_)})
-    await ctx.send("reaction role added")
-    save_to_react()
+        await ctx.send("reaction role added")
+        save_to_react()
 
 @bot.command(name='role-del')
-async def del_role(ctx, id_msg, emoji, role):
+async def del_role(ctx, id_msg, emoji):
     to_del = -1
     if id_msg not in to_react.keys():
         await ctx.send("no role register for this message")
         return
     for i in range(to_react[id_msg]):
-        if to_react[id_msg][i]["reation"] == emoji.id and to_react[id_msg][i]["role_name"] == role:
+        if to_react[id_msg][i]["reation"] == emoji.id:
             to_del = i
             break
 
-    del to_react[id_msg][to_del]
-    await ctx.send("reaction role delete")
-    save_to_react()
+    if to_del != -1:
+        del to_react[id_msg][to_del]
+        await ctx.send("reaction role delete")
+        save_to_react()
+    else:
+        await ctx.send("this reaction is not register for this message")
+
+
 @bot.command(name='open-conv')
 async def start_conv(ctx, state1, state2):
     #swap "Bénévole montage" en "Conventionniste"
@@ -91,12 +97,6 @@ async def start_conv(ctx, state1, state2):
         await member.add_roles(role2)
 
     await ctx.send("Convention open")
-
-@bot.command(name='startbot')
-async def start_bot(ctx):
-    global GUILD
-    GUILD.append(ctx.guild)
-    await ctx.send("guild update")
 
 
 @bot.command(name='get-archi')
