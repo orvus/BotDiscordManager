@@ -107,9 +107,9 @@ def namestr(obj, namespace):
 
 
 def save(var):
-    print((namestr(var, globals())[0]))
+    # print((namestr(var, globals())[0]))
     with open(namestr(var, globals())[0], "wb+") as f:
-        print(f)
+        #print(f)
         f.write(pickle.dumps(var))
 
 def load(var):
@@ -222,7 +222,7 @@ async def del_dispatcher_channel(ctx, channel_id : int):
     print("del fork chan")
     guild = ctx.guild
     if guild.id not in guild_tab.keys():
-        await ctx.send("Aucune information sur le serveur de trouvé, commande ignoré")
+        await ctx.send("Aucune information sur le serveur de trouvée, commande ignorée")
         return
 
     existing_channel = discord.utils.get(guild.channels, id=int(channel_id))
@@ -330,7 +330,7 @@ async def del_role_chan(ctx, channel_id: int, *remain):
             except:
                 print("elt not in list")
         save(guild_tab)
-        await ctx.send("roles supprimé")
+        await ctx.send("roles supprimés")
 
 
 @bot.command(name='set-chan-txt-creation-for-child',
@@ -382,7 +382,7 @@ async def set_msg_for_child(ctx, channel_id: int, txt):
         return
     guild_tab[guild.id]["fork"][channel_id]["msg_txt"] = txt
     save(guild_tab)
-    await ctx.send("mise a jour du texte personnalisé envoyé a la création d'un chan")
+    await ctx.send("mise à jour du texte personnalisé envoyé à la création d'un chan")
 
 
 @bot.command(name="unbind-chan-txt",
@@ -417,7 +417,7 @@ async def bind_with_chan_txt(ctx, channel_id: int, chan_txt_id: int):
 
     guild_tab[guild.id]["fork"][channel_id]["txt_chan_id"] = chan_txt_id
     save(guild_tab)
-    await ctx.send("mise a jour du chan txt utilisé par les salon créent")
+    await ctx.send("mise à jour du chan texte utilisé pour les salons créés")
 
 
 @bot.command(name='del-on-leave',
@@ -542,6 +542,14 @@ async def on_voice_state_update(member, before, after):
 
     if is_chan_in_forkeur(guild, after.channel):
         print("after in forkeur chan")
+
+        old_chan = [k for k,elt in guild_tab[guild.id]["created"].items() if elt["creator"] == member.id]
+
+        if len(old_chan) != 0:
+            print("il possède deja un chan")
+            await member.move_to(getChanFromId(guild, old_chan[0]))
+            return
+
         channel_info = guild_tab[guild.id]["fork"][after.channel.id]
         member_role = get_values(member, "roles", "name")  # list(map(lambda role: role.name, member.roles))
         name = member.display_name
@@ -594,18 +602,20 @@ async def on_voice_state_update(member, before, after):
         if "del_on_leave" in parent_info.keys():
             to_del = parent_info["del_on_leave"]
         print("ok 1")
-        if len(before.channel.members) == 0 or (to_del is True and member.id == current_info["creator"]):
+        #if len(before.channel.members) == 0 or (to_del is True and member.id == current_info["creator"]):
+        if len(before.channel.members) == 0 or (to_del is True
+                and current_info["creator"] not in get_values(before.channel, "members", "id")):
 
             print(f"del voice chan ")
             if "delay" in parent_info.keys():
                 print(f"wait {parent_info['delay']} seconds")
                 await asyncio.sleep(parent_info['delay'])
-                if member in before.channel.members:
+                if current_info["creator"] in get_values(before.channel, "members", "id"):
                     print("still in")
                     return
                 benevole = None
                 for person in before.channel.members:
-                    if "benevole workshop" in get_values(person,"roles","name"):
+                    if "Doom Guy" in get_values(person,"roles","name"):
                         benevole = person
                         break
                 if benevole is not None:
