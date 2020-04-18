@@ -1,3 +1,4 @@
 TODO
 use cog for discord bot
 use from pathlib import Path for path universal path between OS
+IN PROGRESS add delay to archive chan txt (and vocal maybe)
