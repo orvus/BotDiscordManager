@@ -87,7 +87,7 @@ async def add_role(ctx, chan_id : int, id_msg : int , role, type_: int):
         await ctx.send('👍')
         emoji = emoji_get_id(reaction.emoji)
         if id_msg not in to_react.keys():
-            to_react[id_msg] = dict()
+            to_react[id_msg] = {"chan_id": chan_id}
         if emoji not in to_react[id_msg].keys():
             to_react[id_msg][emoji] = [(role, int(type_))]
         elif role not in to_react[id_msg][emoji]:
@@ -145,11 +145,18 @@ async def del_emoji_role(ctx, id_msg : int, role):
             await ctx.send("emoji not in message")
             return
         new_list = [(rrole,type_) for rrole, type_ in to_react[id_msg][emoji] if role != rrole]
-        if new_list is []:
+        print(new_list)
+        if new_list == []:
+            print("empty")
             del to_react[id_msg][emoji]
+            chan = discord.utils.get(ctx.guild.channels, id=to_react[id_msg]["chan_id"])
+            await (await chan.fetch_message(id_msg)).add_reaction(reaction.emoji)
+            if to_react[id_msg] == {}:
+                del to_react[id_msg]
         else:
+            print("not empty")
             to_react[id_msg][emoji] = new_list
-        await ctx.send("emoji not in message")
+        await ctx.send("role delted")
         pprint(to_react)
         save_to_react()
 
