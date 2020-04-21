@@ -1,5 +1,4 @@
 TODO
 use cog for discord bot
 use from pathlib import Path for path universal path between OS
-IN PROGRESS add delay to archive chan txt (and vocal maybe)
-if go in fork chan and a you are already a pocessor of a chan, bot dont create a new but move you to this chan
+

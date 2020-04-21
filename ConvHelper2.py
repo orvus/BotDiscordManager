@@ -9,9 +9,12 @@ from discord.ext import commands
 import copy
 from dotenv import load_dotenv
 import pickle
-from pprint import pprint
+import pprint
 
-load_dotenv(dotenv_path=".env")
+
+pp = pprint.PrettyPrinter(indent=0)
+
+load_dotenv(dotenv_path=".envTyo")
 
 bot = commands.Bot(command_prefix='µ')
 ###############################
@@ -24,13 +27,13 @@ GUILD = []
 
 
 def save_to_react():
-    with open("react2", "wb+") as f:
+    with open("react2bis", "wb+") as f:
         f.write(pickle.dumps(to_react))
 
 def load_to_react():
     global to_react
     try:
-        with open("react2", "rb") as f:
+        with open("react2bis", "rb") as f:
             to_react = pickle.load(f)
     except:
         to_react = dict()
@@ -69,16 +72,40 @@ def emoji_get_id(emoji):
     else:
         return emoji.id
 
+
 @bot.command(name="dump")
 async def dump_to_react(ctx):
-    pprint(to_react)
+    pp.pprint(to_react)
+    clean_unused()
+
+    await ctx.send("`" + pp.pformat(to_react) + "`")
+
+def clean_unused():
+    to_react_cpy = copy.copy(to_react)
+    msg_to_del = []
+    for msg_id in to_react_cpy:
+        if len(to_react_cpy[msg_id]) <= 1:
+            msg_to_del.append(msg_id)
+    for msg in msg_to_del:
+        del to_react[msg]
+
+@bot.command(name="reset")
+async def reset_all(ctx):
+    global to_react
+    to_react = dict()
+    save_to_react()
+    await ctx.send("all roles on reactions have been remove")
 
 
 @bot.command(name='role')
 async def add_role(ctx, chan_id : int, id_msg : int , role, type_: int):
+    print("[add role]")
+    if role not in get_values(ctx.guild, "roles", "name"):
+        await ctx.send("this role doesn't exist in this server")
+        return
     def check(reaction, user):
-        return user == ctx.author  # and str(reaction.emoji) == '👍'
-
+        return user == ctx.author and reaction.message.id == ctx.message.id  # and str(reaction.emoji) == '👍'
+    await ctx.send("waiting reaction for the message above")
     try:
         reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
     except asyncio.TimeoutError:
@@ -97,7 +124,7 @@ async def add_role(ctx, chan_id : int, id_msg : int , role, type_: int):
         await ctx.send("reaction role added")
 
         save_to_react()
-        pprint(to_react)
+        pp.pprint(to_react)
         # react on the message
         cat = discord.utils.get(ctx.guild.channels, id=chan_id)
 
@@ -105,6 +132,8 @@ async def add_role(ctx, chan_id : int, id_msg : int , role, type_: int):
 
 @bot.command(name='del-emoji')
 async def del_role(ctx, id_msg, emoji):
+    print("[del emoji] not implemented")
+    return
     to_del = -1
     if id_msg not in to_react.keys():
         await ctx.send("no role register for this message")
@@ -113,10 +142,12 @@ async def del_role(ctx, id_msg, emoji):
         await ctx.send("emoji not in message")
         return
     del to_react[id_msg][emoji.id]
-    pprint(to_react)
+    pp.pprint(to_react)
 
 @bot.command(name='del-role')
 async def del_role(ctx, id_msg, role):
+    print("[del role] not implemented")
+    return
     to_del = -1
     if id_msg not in to_react.keys():
         await ctx.send("no role register for this message")
@@ -125,12 +156,14 @@ async def del_role(ctx, id_msg, role):
         if role in roles:
             to_react[id_msg][emoji_id].remove(role)
     await ctx.send("emoji not in message")
-    pprint(to_react)
+    pp.pprint(to_react)
 
 @bot.command(name='del-emoji-role')
 async def del_emoji_role(ctx, id_msg : int, role):
+    print("[del role emoji] ")
     def check(reaction, user):
-        return user == ctx.author  # and str(reaction.emoji) == '👍'
+        return user == ctx.author and reaction.message.id == ctx.message.id  # and str(reaction.emoji) == '👍'
+    await ctx.send("waiting reaction for the message above")
     try:
         reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
     except asyncio.TimeoutError:
@@ -142,9 +175,13 @@ async def del_emoji_role(ctx, id_msg : int, role):
             await ctx.send("no role register for this message")
             return
         if emoji not in to_react[id_msg].keys():
-            await ctx.send("emoji not in message")
+            await ctx.send("this emoji is not register for this message")
             return
         new_list = [(rrole,type_) for rrole, type_ in to_react[id_msg][emoji] if role != rrole]
+        for rrole, type_ in to_react[id_msg][emoji]:
+            print(rrole,role, rrole != role)
+
+
         print(new_list)
         if new_list == []:
             print("empty")
@@ -156,8 +193,8 @@ async def del_emoji_role(ctx, id_msg : int, role):
         else:
             print("not empty")
             to_react[id_msg][emoji] = new_list
-        await ctx.send("role delted")
-        pprint(to_react)
+        await ctx.send(f"role {role} deleted from emoji {reaction.emoji}")
+        pp.pprint(to_react)
         save_to_react()
 
 
@@ -194,29 +231,19 @@ def get_element(emo_id):
 @bot.event
 async def on_raw_reaction_add(reactionPayload):
     msg_id = reactionPayload.message_id
-    emoji = reactionPayload.emoji
+    emoji_real = reactionPayload.emoji
     member = reactionPayload.member
     guild = member.guild
-    print("---- reaction add ----")
-    pprint(guild)
-    g2 = await bot.fetch_guild(guild.id)
-    pprint(g2)
-    for g in bot.guilds:
-        if g.id == guild.id:
-            pprint(g)
-    print(emoji)
-    emoji = emoji_get_id(emoji)
+    emoji = emoji_get_id(emoji_real)
     print(emoji)
     #pprint(to_react)
     if msg_id in to_react.keys():
-        print("1")
-        a = [elt for elt in to_react[msg_id].keys()]
-        a.append(emoji)
-        print(a)
+        # a = [elt for elt in to_react[msg_id].keys()]
+        # a.append(emoji)
+        # print(a)
         if emoji in to_react[msg_id].keys():
-            print("2")
             for role_name, type_ in to_react[msg_id][emoji]:
-                print("3",role_name,type_)
+
                 if type_ in [1, 2]:
                     print(f"give the role {role_name} to {member.display_name}")
                     role = discord.utils.get(guild.roles, name=role_name)
@@ -248,6 +275,7 @@ async def on_raw_reaction_add(reactionPayload):
                     role = discord.utils.get(guild.roles, name=role_name)
                     await member.remove_roles(role)
 
+
 def get_values(obj,tab,attr):
     return list(map(lambda tmp: getattr(tmp, attr), getattr(obj, tab)))
 
@@ -261,7 +289,7 @@ async def on_raw_reaction_remove(reactionPayload):
 
     guild = discord.utils.get(bot.guilds,id=guild_id)  #await bot.fetch_guild(guild_id)
     member = discord.utils.get(guild.members,id=user_id)
-    pprint(guild)
+    pp.pprint(guild)
     print(f"{guild.name} {member} <------- TEST")
     if msg_id in to_react.keys():
         if emoji in to_react[msg_id].keys():
@@ -270,7 +298,6 @@ async def on_raw_reaction_remove(reactionPayload):
                 print("3",role_name,type_)
                 if type_ in [1, 3]:
                     await deleteRole(guild, member, role_name)
-
 
 
 async def deleteRole(guild,member,role_name):
@@ -284,16 +311,82 @@ async def deleteRole(guild,member,role_name):
 
 @bot.event
 async def on_member_join(member):
-    global GUILD
-    guild = member.guild
-    if guild.id not in [guild.id for guild in GUILD]:
-        print(f" guild not found {guild.id} ")
-        GUILD.append(guild)
+    print(f"Ajout du role Auth a {member.display_name}")
+    role = discord.utils.get(member.guild.roles, name="Auth")
+    await member.add_roles(role)
+
+# -----------------------------------------------------------
+def copyGuild(_from,_to):
+    return
+
+def get_role_from_other_guild(role_g1,new_guild):
+    for role in new_guild.roles:
+        if role_g1.name == role.name:
+            return role
+    return None
+
+@bot.command(name = 'duplicate-category-guild')
+async def copyCategoryToGuild(ctx, cat_id: int, to_guild: int):
+    guild_in = ctx.guild
+    guild_out = discord.utils.get(bot.guilds, id=to_guild)
+
+    print(f"{get_values(bot,'guilds','name')}")
+    cat = discord.utils.get(guild_in.categories, id=cat_id)
+    if cat is not None:
+        print("cat not none")
+        new_over = dict()
+        for k, v in cat.overwrites.items():
+            a = get_role_from_other_guild(k, guild_out)
+            if a is not None:
+                new_over[a] = v
+            else:
+                print(f"{k.name} bug role")
+        new_cat = await guild_out.create_category(cat.name, overwrites=new_over)
+
+        for chan in cat.text_channels:
+            new_over = dict()
+            for k, v in chan.overwrites.items():
+                a = get_role_from_other_guild(k, guild_out)
+                if a is not None:
+                    new_over[a] = v
+                else:
+                    print(f"{k.name} bug role")
+            await new_cat.create_text_channel(chan.name, overwrites=new_over)
+        for chan in cat.voice_channels:
+            new_over = dict()
+            for k, v in chan.overwrites.items():
+                a = get_role_from_other_guild(k, guild_out)
+                if a is not None:
+                    new_over[a] = v
+                else:
+                    print(f"{k.name} bug role")
+            await new_cat.create_voice_channel(chan.name, overwrites=new_over)
+
     else:
-        for i in range(len(GUILD)):
-            if GUILD[i].id == guild.id:
-                print(f"guild id {GUILD[i].id} at {i}")
-                GUILD[i] = guild
+        print("cat none")
+@bot.command(name="del-chan-no-cat")
+async def del_chan_no_cat(ctx):
+    guild = ctx.guild
+    for chan in guild.channels:
+        #print(chan.type)
+        if chan.type in [discord.ChannelType.text, discord.ChannelType.voice]:
+            if chan.category_id is None:
+                await chan.delete()
+                #print(f"failed to find cat for {chan.name}")
+
+
+@bot.command(name = 'duplicate-category')
+async def duplicateCategory(ctx, cat_id : int, nb_time=1):
+    cat = discord.utils.get(ctx.guild.categories, id=cat_id)
+    print("duplicate", cat.name)
+    if cat is not None:
+        for i in range(0, nb_time):
+            new_cat = await ctx.guild.create_category(cat.name, overwrites=cat.overwrites)
+            for chan in cat.text_channels:
+                await new_cat.create_text_channel(chan.name, overwrites=chan.overwrites)
+            for chan in cat.voice_channels:
+                await new_cat.create_voice_channel(chan.name, overwrites=chan.overwrites)
+# -----------------------------------------------------------
 
 print("++++++++++++++++++++++++++")
 load_to_react()

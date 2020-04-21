@@ -10,7 +10,7 @@ import asyncio
 
 pp = pprint.PrettyPrinter(indent=0)
 
-load_dotenv(dotenv_path=".env")
+load_dotenv(dotenv_path=".envTyo")
 
 ###############################
 # GLOBAL VARIABLE
@@ -515,15 +515,15 @@ def is_chan_in_created(guild, chan):
 
 
 # # ADD REATION ON PEOPLE  WHEN ENTERING IN SERVER # #
-@bot.event
-async def on_message(message):
-    try:
-        if contain_any(get_values(message.author,"roles","name"), ["Doom Guy", "Orga"]) and message.content[0] == "£":
-            await bot.process_commands(message)
-        elif message.content[0] == "£":
-            await message.channel.send("Sorry you don't have the permission to do this")
-    except:
-        print("no msg")
+#@bot.event
+#async def on_message(message):
+        #    try:
+        #if contain_any(get_values(message.author, "roles", "name"), ["Doom Guy", "Orga"]) and message.content[0] == "£":
+        #    await bot.process_commands(message)
+        #elif message.content[0] == "£":
+    #    await message.channel.send("Sorry you don't have the permission to do this")
+    #except:
+#    print("no msg")
 
 
 @bot.event
@@ -543,7 +543,7 @@ async def on_voice_state_update(member, before, after):
     if is_chan_in_forkeur(guild, after.channel):
         print("after in forkeur chan")
 
-        old_chan = [k for k,elt in guild_tab[guild.id]["created"].items() if elt["creator"] == member.id]
+        old_chan = [k for k, elt in guild_tab[guild.id]["created"].items() if elt["creator"] == member.id and elt["parent"] == after.channel.id]
 
         if len(old_chan) != 0:
             print("il possède deja un chan")
@@ -635,14 +635,16 @@ async def on_voice_state_update(member, before, after):
             if "perso_txt_chan_id" in current_info.keys():  # it have to delete chan txt perso
                 print("child have chan txt")
                 if parent_info["child_txt_archive"] is True: # NO archive it
-                    print("make archive later")
+
+                    print(f"make archive later {discord.utils.get(guild.categories, name='archive')}")
+                    print(f"cat name : {get_values(guild,'categories','name')}")
                     chan = getChanFromId(guild, current_info["perso_txt_chan_id"])
                     await chan.edit(
                         name=chan.name,
                         topic=chan.topic,
                         position=0,
                         sync_permissions=True,
-                        category=discord.utils.get(guild.channels, name="archive")
+                        category=discord.utils.get(guild.categories, name="archive")
                     )
                     pass  # move chan txt to saved zone
                 else: # delete chan txt of child
