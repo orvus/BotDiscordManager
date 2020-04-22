@@ -375,7 +375,7 @@ async def del_chan_no_cat(ctx):
                 #print(f"failed to find cat for {chan.name}")
 
 
-@bot.command(name = 'duplicate-category')
+@bot.command(name='duplicate-category')
 async def duplicateCategory(ctx, cat_id : int, nb_time=1):
     cat = discord.utils.get(ctx.guild.categories, id=cat_id)
     print("duplicate", cat.name)

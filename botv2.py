@@ -10,14 +10,14 @@ import asyncio
 
 pp = pprint.PrettyPrinter(indent=0)
 
-load_dotenv(dotenv_path=".envTyo")
+load_dotenv(dotenv_path=".env")
 
 ###############################
 # GLOBAL VARIABLE
 ###############################
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='£')
+bot = commands.Bot(command_prefix='ù')
 @bot.command(name='replique')
 async def replique(ctx):
     await ctx.send(content="hasta la vista baby", tts=True)
@@ -218,7 +218,7 @@ async def add_dispatcher_channel(ctx, channel_id: int, channel_txt_id=0):
         await ctx.send("canal ajouté")
 @bot.command(name='del-fork-chan',
              help="Supprime un canal d'écoute\n argument : \n <identifiant du canal a supprimer>  ")
-async def del_dispatcher_channel(ctx, channel_id : int):
+async def del_dispatcher_channel(ctx, channel_id: int):
     print("del fork chan")
     guild = ctx.guild
     if guild.id not in guild_tab.keys():
@@ -660,8 +660,8 @@ async def on_voice_state_update(member, before, after):
             new_creator = before.channel.members[0].id
             print(f"new creator is {getUserFromId(guild, new_creator).display_name }")
             if parent_info["txt_chan_id"] != 0:
-                msg = getChanFromId(guild,parent_info["txt_chan_id"]).fetch_message(current_info["msg_id"])
-                await msg.edit(content=parent_info["msg_txt"].format(new_creator.mention,
+                msg = await getChanFromId(guild, parent_info["txt_chan_id"]).fetch_message(current_info["msg_id"])
+                await msg.edit(content=parent_info["msg_txt"].format(getUserFromId(guild, new_creator).mention,
                                                                      "🎬 https://discordapp.com/channels/" + str(
                                                                          guild.id) + "/" + str(before.channel.id)))
             current_info["creator"] = new_creator  # getUserFromId(guild, new_creator).display_name
