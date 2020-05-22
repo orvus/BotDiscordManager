@@ -17,7 +17,7 @@ load_dotenv(dotenv_path=".env")
 ###############################
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='ù')
+bot = commands.Bot(command_prefix='%')
 @bot.command(name='replique')
 async def replique(ctx):
     await ctx.send(content="hasta la vista baby", tts=True)
@@ -627,11 +627,12 @@ async def on_voice_state_update(member, before, after):
                 await before.channel.delete()
             except:
                 print("skip delete chan voice")
-            if parent_info["txt_chan_id"] != 0:  # it have to delete msg
                 try:
                     await (await getChanFromId(guild, parent_info["txt_chan_id"]).fetch_message(current_info["msg_id"])).delete()
                 except:
                     print("skip delte msg")
+            if parent_info["txt_chan_id"] != 0:  # it have to delete msg
+                pass
             if "perso_txt_chan_id" in current_info.keys():  # it have to delete chan txt perso
                 print("child have chan txt")
                 if parent_info["child_txt_archive"] is True: # NO archive it
@@ -644,7 +645,7 @@ async def on_voice_state_update(member, before, after):
                         topic=chan.topic,
                         position=0,
                         sync_permissions=True,
-                        category=discord.utils.get(guild.categories, name="archive")
+                        category=discord.utils.get(guild.categories, name="________📚BIBLIOTHEQUE📚_________")
                     )
                     pass  # move chan txt to saved zone
                 else: # delete chan txt of child
