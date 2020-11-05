@@ -10,12 +10,12 @@ def namestr(obj, namespace):
 
 #TODO save var with part of fileName for evoid name collision
 def save(var,name):
-    with open(namestr(var, name, "wb+") as f:
+    with open(name, "wb+") as f:
         f.write(pickle.dumps(var))
 
-def load(var,name):
+def load(name):
     try:
-        with open(namestr(var, name, "rb") as f:
+        with open(name, "rb") as f:
             return pickle.load(f)
     except:
         return dict()

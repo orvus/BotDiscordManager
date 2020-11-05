@@ -435,6 +435,7 @@ async def on_voice_state_update(member, before, after):
 @bot.event
 async def on_ready():
     print("bot online")
-g_guild_tab = load(g_guild_tab,"g_guild_tab")
+if(os.path.exists("g_guild_tab")):
+    g_guild_tab = load("g_guild_tab")
 
 bot.run(TOKEN)

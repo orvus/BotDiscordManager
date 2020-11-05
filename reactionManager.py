@@ -238,6 +238,6 @@ async def deleteRole(guild, member, role_name):
         await member.remove_roles(role)
 
 
-
-load(to_react,"to_react")
+if(os.path.exists("to_react")):
+    load("to_react")
 bot.run(TOKEN)
