@@ -114,7 +114,7 @@ async def add_dispatcher_channel(ctx, channel_id: int):
                                                    "role": [],
                                                    "del_on_leave": False
                                                    }
-        save(g_guild_tab)
+        save(g_guild_tab,"g_guild_tab")
         await ctx.send("canal ajouté")
 
 @bot.command(name='canal-de-dispersion-supr',
@@ -133,7 +133,7 @@ async def del_dispatcher_channel(ctx, channel_id: int):
     else:
         print(f"on supprime le chan dispatcher : {channel_id} ({getChanFromId(guild,channel_id)})")
         del g_guild_tab[guild.id]["fork"][channel_id]
-        save(g_guild_tab)
+        save(g_guild_tab,"g_guild_tab")
         await ctx.send("canal supprimé")
 
 @bot.command(name='canal-de-dispersion-nom-ajout',
@@ -157,7 +157,7 @@ async def add_named_chan(ctx, channel_id : int, *remain):
     if "childs_names_list" not in g_guild_tab[guild.id]["fork"][channel_id].keys():
         g_guild_tab[guild.id]["fork"][channel_id]["childs_names_list"] = list()
     g_guild_tab[guild.id]["fork"][channel_id]["childs_names_list"].extend([r for r in remain if is_valid_chan_name(r, 1)])
-    save(g_guild_tab)
+    save(g_guild_tab,"g_guild_tab")
     await ctx.send(f"Noms ajoutés sauf : {[r for r in remain if not is_valid_chan_name(r, 1)]}")
 
 @bot.command(name='canal-de-dispersion-nom-supr',
@@ -179,7 +179,7 @@ async def del_named_chan(ctx, channel_id : int, *to_del):
             if elt in g_guild_tab[guild.id]["fork"][channel_id]["childs_names_list"]:
                 g_guild_tab[guild.id]["fork"][channel_id]["nb_name_pattern"] -= 1
                 g_guild_tab[guild.id]["fork"][channel_id]["phrases"].remove(elt)
-        save(g_guild_tab)
+        save(g_guild_tab,"g_guild_tab")
         await ctx.send("textes supprimé")
 
 
@@ -205,7 +205,7 @@ async def add_role_chan(ctx, channel_id: int, *to_add):
     print(to_add, guild_roles, g_guild_tab[guild.id]["fork"][channel_id]["role"])
     g_guild_tab[guild.id]["fork"][channel_id]["role"].extend([r for r in to_add if r in guild_roles and r not in g_guild_tab[guild.id]["fork"][channel_id]["role"]])
     print(f"les roles autorisé : {g_guild_tab[guild.id]['fork'][channel_id]['role']}")
-    save(g_guild_tab)
+    save(g_guild_tab,"g_guild_tab")
     await ctx.send(f"roles autorisé : {g_guild_tab[guild.id]['fork'][channel_id]['role']}")
 
 @bot.command(name='canal-de-role-supr',
@@ -226,7 +226,7 @@ async def del_role_chan(ctx, channel_id: int, *remain):
                 g_guild_tab[guild.id]["fork"][channel_id]["role"].remove(role)
             except:
                 print("role not in list")
-        save(g_guild_tab)
+        save(g_guild_tab,"g_guild_tab")
         await ctx.send("roles supprimés")
 
 
@@ -249,7 +249,7 @@ async def set_txt_creation_for_child(ctx, channel_id: int, is_txt: bool, is_arch
 
     g_guild_tab[guild.id]["fork"][channel_id]["child_chan_txt"] = is_txt
     g_guild_tab[guild.id]["fork"][channel_id]["child_txt_archive"] = is_archive
-    save(g_guild_tab)
+    save(g_guild_tab,"g_guild_tab")
     await ctx.send(f"les chan créent par {getChanFromId(guild,channel_id)}   { 'auront' if is_txt else 'n auront pas' } de chan txt de crée et ils {'seront' if is_archive else 'ne seront pas'} archivés" )
 
 
@@ -267,7 +267,7 @@ async def del_on_leave(ctx, channel_id: int, to_del: bool, delay=0):
     else:
         g_guild_tab[guild.id]["fork"][channel_id]["del_on_leave"] = to_del
         g_guild_tab[guild.id]["fork"][channel_id]["delay"] = delay
-        save(g_guild_tab)
+        save(g_guild_tab,"g_guild_tab")
         await ctx.send("mise a jour ok")
 
 
@@ -304,7 +304,7 @@ async def set_default_archive(ctx, arch_id : int):
 async def clean_created(ctx):
     if ctx.guild.id in g_guild_tab.keys():
         g_guild_tab[ctx.guild.id]["created"] = dict()
-    save(g_guild_tab)
+    save(g_guild_tab,"g_guild_tab")
 
 
 @bot.command(name="clean-all")
@@ -313,7 +313,7 @@ async def clean_all(ctx):
         g_guild_tab[ctx.guild.id]["fork"] = dict()
         g_guild_tab[ctx.guild.id]["created"] = dict()
         g_guild_tab[ctx.guild.id]["default_param"] = dict()
-    save(g_guild_tab)
+    save(g_guild_tab,"g_guild_tab")
 
 ##############################################
 #                EVENT BOT                   #
@@ -431,10 +431,10 @@ async def on_voice_state_update(member, before, after):
             print(f"new chan name : {chan_name}")
             await before.channel.edit(name=chan_name)
 
-    save(g_guild_tab)
+    save(g_guild_tab,"g_guild_tab")
 @bot.event
 async def on_ready():
     print("bot online")
-g_guild_tab = load(g_guild_tab)
+g_guild_tab = load(g_guild_tab,"g_guild_tab")
 
 bot.run(TOKEN)

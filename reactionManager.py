@@ -69,7 +69,7 @@ async def dump_to_react(ctx):
 async def reset_all(ctx):
     global to_react
     to_react = dict()
-    save(to_react)
+    save(to_react,"to_react")
     await ctx.send("all roles on reactions have been remove")
 
 ## ADD reaction roles ##
@@ -99,7 +99,7 @@ async def add_role(ctx, chan_id : int, id_msg : int , role, type_: int):
             await ctx.send("role already in message")
         await ctx.send("reaction role added")
 
-        save(to_react)
+        save(to_react,"to_react")
         pp.pprint(to_react)
         # react on the message
         cat = discord.utils.get(ctx.guild.channels, id=chan_id)
@@ -143,7 +143,7 @@ async def del_emoji_role(ctx, id_msg : int, role):
             to_react[id_msg][emoji] = new_list
         await ctx.send(f"role {role} deleted from emoji {reaction.emoji}")
         pp.pprint(to_react)
-        save(to_react)
+        save(to_react,"to_react")
 
 ### SET ROLE By DEFAULT ON SERVER JOIN
 
@@ -239,5 +239,5 @@ async def deleteRole(guild, member, role_name):
 
 
 
-load(to_react)
+load(to_react,"to_react")
 bot.run(TOKEN)
