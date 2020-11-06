@@ -45,11 +45,11 @@ async def siteswap(ctx, *,f_siteswap="333"):
         print("siteswap already exist")
     if(os.path.exists( dir_img / "{}.gif".format(hashlib.sha256(siteswapEnc).hexdigest()))):
         print("file exist")
-        await ctx.send(content=f"{ctx.author.mention} voila le siteswap {siteswap} ", file=discord.File(dir_img / "{}.gif".format(hashlib.sha256(siteswapEnc).hexdigest())))
+        await ctx.send(content=f"{ctx.author.mention} voila le siteswap {f_siteswap} ", file=discord.File(dir_img / "{}.gif".format(hashlib.sha256(siteswapEnc).hexdigest())))
     else:
         print("fail to load image")
 
-        await ctx.send(content=f"voila le siteswap {siteswap}",file=discord.File(fail_gif_path), delete_after=10.0)
+        await ctx.send(content=f"voila le siteswap {f_siteswap}",file=discord.File(fail_gif_path), delete_after=10.0)
         await ctx.send(content=f"**OU PAS**, voici le lien de juggling lab pour apprendre le siteswap : https://jugglinglab.org/html/ssnotation.html ", delete_after=10.0)
     try:
         await ctx.message.delete(delay=1.0)
