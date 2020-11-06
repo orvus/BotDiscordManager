@@ -6,9 +6,6 @@ from dotenv import load_dotenv
 import hashlib
 from pathlib import Path
 
-import urllib.request
-import wget
-
 load_dotenv(dotenv_path=".env")
 TOKEN = os.getenv('DISCORD_TOKEN_SITESWAP')
 bot = commands.Bot(command_prefix='+')
