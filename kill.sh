@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function kill_chan{
-    pid=`ps aux | grep "python3 channelManager.py" | grep -v "grep" | awk '{print $2}'`
+    pid=`ps aux | grep "python3 channelManager.py" | grep -v "grep" | awk "{print $2}"`
     if [[ ! -z "$pid" ]]
     then
         echo "chan pid ${pid}"
@@ -11,7 +11,7 @@ function kill_chan{
     fi
 }
 function kill_react{
-    pid=`ps aux | grep "reactionManager.py" | grep -v "grep" | awk '{print $2}'`
+    pid=`ps aux | grep "reactionManager.py" | grep -v "grep" | awk "{print $2}"`
     if [[ ! -z "$pid" ]]
     then
         echo "react pid ${pid}"
@@ -22,7 +22,7 @@ function kill_react{
 }
 
 function kill_siteswap{
-    pid=`ps aux | grep "siteswap.py" | grep -v "grep" | awk '{print $2}'`
+    pid=`ps aux | grep "siteswap.py" | grep -v "grep" | awk "{print $2}"`
     if [[ ! -z "$pid" ]]
     then
         echo "siteswap pid ${pid}"
