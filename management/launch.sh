@@ -5,7 +5,7 @@ log_channel="chanManager.log"
 log_reaction="reactManager.log"
 log_siteswap="siteswap.log"
 
-script_dir="./"
+script_dir="../"
 
 
 
@@ -31,7 +31,7 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
-
+cd ${script_dir}
 touch ${log_dir}${log_reaction}
 touch ${log_dir}${log_siteswap}
 touch ${log_dir}${log_channel}
@@ -39,12 +39,12 @@ touch ${log_dir}${log_channel}
 
 echo > ${log_dir}${log_reaction}
 echo > ${log_dir}${log_siteswap}
-
+cd -
 if [[ ${react} -eq 1 ]]
 then
     echo "launch : reaction managet"
-    echo > "${log_dir}${log_reaction}"
     cd ${script_dir}
+    echo > "${log_dir}${log_reaction}"
     nohup python3 reactionManager.py & > "${log_dir}${log_react}"
     cd -
 fi
@@ -52,8 +52,8 @@ fi
 if [[ ${chan} -eq 1 ]]
 then
     echo "launch : channel manager"
-    echo > "${log_dir}${log_channel}"
     cd ${script_dir}
+    echo > "${log_dir}${log_channel}"
     nohup python3 channelManager.py & > "${log_dir}${log_channel}"
     cd -
 fi
@@ -61,8 +61,8 @@ fi
 if [[ ${siteswap} -eq 1 ]]
 then
     echo "launch : siteswap"
-    echo > "${log_dir}${log_siteswap}"
     cd ${script_dir}
+    echo > "${log_dir}${log_siteswap}"
     nohup python3 siteswap.py & > "${log_dir}${log_siteswap}"
     cd -
 fi
