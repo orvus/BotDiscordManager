@@ -1,6 +1,10 @@
 #!/bin/bash
 
-function kill_chan{
+function plop {
+    echo "plop"
+}
+
+function kill_chan {
     pid=`ps aux | grep "python3 channelManager.py" | grep -v "grep" | awk "{print $2}"`
     if [[ ! -z "$pid" ]]
     then
@@ -10,7 +14,7 @@ function kill_chan{
         echo "no pid found for CHAN"
     fi
 }
-function kill_react{
+function kill_react {
     pid=`ps aux | grep "reactionManager.py" | grep -v "grep" | awk "{print $2}"`
     if [[ ! -z "$pid" ]]
     then
@@ -21,7 +25,7 @@ function kill_react{
     fi
 }
 
-function kill_siteswap{
+function kill_siteswap {
     pid=`ps aux | grep "siteswap.py" | grep -v "grep" | awk "{print $2}"`
     if [[ ! -z "$pid" ]]
     then
