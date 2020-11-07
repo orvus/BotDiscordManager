@@ -42,9 +42,27 @@ echo > ${log_dir}${log_siteswap}
 
 if [[ ${react} -eq 1 ]]
 then
+    echo "launch : reaction managet"
     echo > "${log_dir}${log_reaction}"
     cd ${script_dir}
-    nohup python3 reactionManager.py > "${log_dir}${log_channel}"
+    nohup python3 reactionManager.py & > "${log_dir}${log_react}"
     cd -
 fi
 
+if [[ ${chan} -eq 1 ]]
+then
+    echo "launch : channel manager"
+    echo > "${log_dir}${log_channel}"
+    cd ${script_dir}
+    nohup python3 channelManager.py & > "${log_dir}${log_channel}"
+    cd -
+fi
+
+if [[ ${siteswap} -eq 1 ]]
+then
+    echo "launch : siteswap"
+    echo > "${log_dir}${log_siteswap}"
+    cd ${script_dir}
+    nohup python3 siteswap.py & > "${log_dir}${log_siteswap}"
+    cd -
+fi
