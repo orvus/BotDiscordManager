@@ -1,13 +1,36 @@
 #!/bin/bash
-while [ $# -gt 0 ]; do
+
+while [[ $# -gt 0 ]]; do
   case "$1" in
-    --url*|-u*)
-      if [[ "$1" != *=* ]]; then shift; fi # Value is next arg if no `=`
-      URL="${1#*=}"
+    --chan)
+        pid=`jobs -l | grep "channelManager.py" | cut -d' ' -f 2`
+        if [[ ! -z "$pid" ]]
+        then
+            echo "chan pid ${pid}"
+            kill -9 ${pid}
+        else
+            echo "no pid found for CHAN"
+        fi
       ;;
-    --file*|-f*)
-      if [[ "$1" != *=* ]]; then shift; fi
-      FILE="${1#*=}"
+    --react)
+        pid=`jobs -l | grep "reactionManager.py" | cut -d' ' -f 2`
+        if [[ ! -z "$pid" ]]
+        then
+            echo "react pid ${pid}"
+            kill -9 ${pid}
+        else
+            echo "no pid found for REACT"
+        fi
+      ;;
+    --siteswap)
+        pid=`jobs -l | grep "siteswap.py" | cut -d' ' -f 2`
+        if [[ ! -z "$pid" ]]
+        then
+            echo "siteswap pid ${pid}"
+            kill -9 ${pid}
+        else
+            echo "no pid found for SITESWAP"
+        fi
       ;;
     --help|-h)
       printf "Meaningful help message" # Flag argument
@@ -20,5 +43,3 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
-
-
