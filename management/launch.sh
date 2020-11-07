@@ -40,9 +40,9 @@ touch ${log_dir}${log_channel}
 echo > ${log_dir}${log_reaction}
 echo > ${log_dir}${log_siteswap}
 
-if [[ ${chan} -eq 1 ]]
+if [[ ${react} -eq 1 ]]
 then
-    echo > "${log_dir}${log_channel}"
-    nohup "python3 ${script_dir}channelManager.py" > "${log_dir}${log_channel}"
+    echo > "${log_dir}${log_reaction}"
+    nohup "python3 ${script_dir}reactionManager.py" > "${log_dir}${log_channel}"
 fi
 
