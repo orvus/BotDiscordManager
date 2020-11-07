@@ -43,6 +43,6 @@ echo > ${log_dir}${log_siteswap}
 if [[ ${chan}==1 ]]
 then
     echo > "${log_dir}${log_channel}"
-    nohup "${script_dir}channelManager.py" > "${log_dir}${log_channel}"
+    nohup "python3 ${script_dir}channelManager.py" > "${log_dir}${log_channel}"
 fi
 
