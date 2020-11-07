@@ -3,7 +3,7 @@
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --chan)
-        pid=`ps aux | grep "channelManager.py" | cut -d' ' -f 2`
+        pid=`ps aux | grep "python3 channelManager.py" | grep -v "grep" | awk '{print $2}'`
         if [[ ! -z "$pid" ]]
         then
             echo "chan pid ${pid}"
@@ -13,7 +13,7 @@ while [[ $# -gt 0 ]]; do
         fi
       ;;
     --react)
-        pid=`ps aux | grep "reactionManager.py" | cut -d' ' -f 2`
+        pid=`ps aux | grep "reactionManager.py" | grep -v "grep" | awk '{print $2}'`
         if [[ ! -z "$pid" ]]
         then
             echo "react pid ${pid}"
@@ -23,7 +23,7 @@ while [[ $# -gt 0 ]]; do
         fi
       ;;
     --siteswap)
-        pid=`ps aux | grep "siteswap.py" | cut -d' ' -f 2`
+        pid=`ps aux | grep "siteswap.py" | grep -v "grep" | awk '{print $2}'`
         if [[ ! -z "$pid" ]]
         then
             echo "siteswap pid ${pid}"
