@@ -1,11 +1,11 @@
-#/bin/bash
+#!/bin/bash
 
 log_dir="../log/"
 log_channel="chanManager.log"
 log_reaction="reactManager.log"
 log_siteswap="siteswap.log"
 
-script_dir="../"
+script_dir="./"
 
 
 
@@ -43,6 +43,8 @@ echo > ${log_dir}${log_siteswap}
 if [[ ${react} -eq 1 ]]
 then
     echo > "${log_dir}${log_reaction}"
-    nohup "python3 ${script_dir}reactionManager.py" > "${log_dir}${log_channel}"
+    cd ${script_dir}
+    nohup python3 reactionManager.py > "${log_dir}${log_channel}"
+    cd -
 fi
 
