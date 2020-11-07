@@ -1,36 +1,58 @@
 #!/bin/bash
 
+function kill_chan{
+    pid=`ps aux | grep "python3 channelManager.py" | grep -v "grep" | awk '{print $2}'`
+    if [[ ! -z "$pid" ]]
+    then
+        echo "chan pid ${pid}"
+        kill -9 ${pid}
+    else
+        echo "no pid found for CHAN"
+    fi
+}
+function kill_react{
+    pid=`ps aux | grep "reactionManager.py" | grep -v "grep" | awk '{print $2}'`
+    if [[ ! -z "$pid" ]]
+    then
+        echo "react pid ${pid}"
+        kill -9 ${pid}
+    else
+        echo "no pid found for REACT"
+    fi
+}
+
+function kill_siteswap{
+    pid=`ps aux | grep "siteswap.py" | grep -v "grep" | awk '{print $2}'`
+    if [[ ! -z "$pid" ]]
+    then
+        echo "siteswap pid ${pid}"
+        kill -9 ${pid}
+    else
+        echo "no pid found for SITESWAP"
+    fi
+}
+
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --all)
+       kill_chan
+       kill_react
+       kill_siteswap
+       exit 1
+      ;;
+
     --chan)
-        pid=`ps aux | grep "python3 channelManager.py" | grep -v "grep" | awk '{print $2}'`
-        if [[ ! -z "$pid" ]]
-        then
-            echo "chan pid ${pid}"
-            kill -9 ${pid}
-        else
-            echo "no pid found for CHAN"
-        fi
+        kill_chan
+        exit 1
       ;;
     --react)
-        pid=`ps aux | grep "reactionManager.py" | grep -v "grep" | awk '{print $2}'`
-        if [[ ! -z "$pid" ]]
-        then
-            echo "react pid ${pid}"
-            kill -9 ${pid}
-        else
-            echo "no pid found for REACT"
-        fi
+        kill_react
+        exit 1
       ;;
     --siteswap)
-        pid=`ps aux | grep "siteswap.py" | grep -v "grep" | awk '{print $2}'`
-        if [[ ! -z "$pid" ]]
-        then
-            echo "siteswap pid ${pid}"
-            kill -9 ${pid}
-        else
-            echo "no pid found for SITESWAP"
-        fi
+        kill_siteswap
+        exit 1
       ;;
     --help|-h)
       printf "Meaningful help message" # Flag argument
