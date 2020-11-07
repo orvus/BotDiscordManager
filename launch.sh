@@ -3,13 +3,28 @@
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --chan)
-      chan=1
+        python3 channelManager.py > log/chan.log &
+        pid=`jobs -l | grep "channelManager.py" | cut -d' ' -f 2`
+        if [[ -z "$pid" ]]
+        then
+            echo "chan pid ${pid}"
+        fi
       ;;
     --react)
-      react=1
+        python3 reactionManager.py > log/react.log &
+        pid=`jobs -l | grep "reactionManager.py" | cut -d' ' -f 2`
+        if [[ -z "$pid" ]]
+        then
+            echo "react pid ${pid}"
+        fi
       ;;
     --siteswap)
-      siteswap=1
+        python3 siteswap.py > log/siteswap.log &
+        pid=`jobs -l | grep "siteswap.py" | cut -d' ' -f 2`
+        if [[ -z "$pid" ]]
+        then
+            echo "siteswap pid ${pid}"
+        fi
       ;;
     --help|-h)
       printf "Meaningful help message" # Flag argument
@@ -22,27 +37,3 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
-
-if [[ ${react} -eq 1 ]]
-then
-    echo "launch : reaction manager"
-    touch log/react.log
-    echo > log/react.log
-    nohup python3 reactionManager.py & > log/react.log
-fi
-
-if [[ ${chan} -eq 1 ]]
-then
-    echo "launch : channel manager"
-    touch log/chan.log
-    echo > log/chan.log
-    nohup python3 channelManager.py & > log/chan.log
-fi
-
-if [[ ${siteswap} -eq 1 ]]
-then
-    echo "launch : siteswap"
-    touch log/siteswap.log
-    echo > log/siteswap.log
-    nohup python3 siteswap.py & > log/siteswap.log
-fi
