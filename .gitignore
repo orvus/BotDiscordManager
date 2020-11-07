@@ -1,4 +1,7 @@
 .env
+.idea/*
+venv/*
 g_guild_tab
 to_react
 /Siteswap/*
+__pycache__/
