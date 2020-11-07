@@ -9,7 +9,7 @@ script_dir="../"
 
 
 
-while [ $# -gt 0 ]; do
+while [[ $# -gt 0 ]]; do
   case "$1" in
     --chan)
       chan=1
@@ -40,7 +40,7 @@ touch ${log_dir}${log_channel}
 echo > ${log_dir}${log_reaction}
 echo > ${log_dir}${log_siteswap}
 
-if [[ ${chan}==1 ]]
+if [[ ${chan} -eq 1 ]]
 then
     echo > "${log_dir}${log_channel}"
     nohup "python3 ${script_dir}channelManager.py" > "${log_dir}${log_channel}"
