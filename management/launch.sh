@@ -1,6 +1,6 @@
 #!/bin/bash
 
-log_dir="../log/"
+log_dir="log/"
 log_channel="chanManager.log"
 log_reaction="reactManager.log"
 log_siteswap="siteswap.log"
