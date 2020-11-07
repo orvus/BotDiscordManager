@@ -25,7 +25,7 @@ done
 
 if [[ ${react} -eq 1 ]]
 then
-    echo "launch : reaction managet"
+    echo "launch : reaction manager"
     touch log/react.log
     echo > log/react.log
     nohup python3 reactionManager.py & > log/react.log
