@@ -10,7 +10,7 @@ from utils import *
 load_dotenv(dotenv_path=".env")
 TOKEN = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
-bot = commands.Bot(command_prefix='*')
+bot = commands.Bot(command_prefix='|')
 
 
 #######################
@@ -23,9 +23,11 @@ def allocate_new_guild(guild_id):
 
 def chooseChanName(g,chan_id):
     try:
-        if g_guild_tab[g.id]["fork"][chan_id]["phrases"] != []:
-            return random.choice(g_guild_tab[g.id]["fork"][chan_id]["phrases"])
+        print(g_guild_tab[g.id]["fork"][chan_id])
+        if g_guild_tab[g.id]["fork"][chan_id]["childs_names_list"] != []:
+            return random.choice(g_guild_tab[g.id]["fork"][chan_id]["childs_names_list"])
     except:
+        print("ALX NOP")
         pass
     try:
         return g_guild_tab[g.id]["default_param"]["chan_name"]
