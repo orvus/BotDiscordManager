@@ -10,7 +10,7 @@ from utils import *
 load_dotenv(dotenv_path=".env")
 TOKEN = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
-bot = commands.Bot(command_prefix='|')
+bot = commands.Bot(command_prefix='*')
 
 
 #######################
