@@ -238,7 +238,28 @@ async def deleteRole(guild, member, role_name):
     else:
         await member.remove_roles(role)
 
+######## SECTION FOR NEW MEMBERS #############
+roles_name_to_give = []
+
+
+@bot.command(name="join-with-roles")
+async def join_roles(ctx, *role_name):
+    global roles_name_to_give
+    roles_name_to_give = [name for name in role_name]
+    save(roles_name_to_give, "roles_at_start")
+
+
+@bot.event
+async def on_member_join(member):
+    print(f"Nouvel arrivant {member.display_name}")
+    roles_to_give = [discord.utils.get(member.guild.roles, name=name) for name in roles_name_to_give]
+    for role in roles_to_give:
+        if role is not None:
+            await member.add_roles(role)
+
 
 if(os.path.exists("to_react")):
-    load("to_react")
+    to_react = load("to_react")
+if(os.path.exists("roles_at_start")):
+    roles_name_to_give = load("roles_at_start")
 bot.run(TOKEN)
