@@ -10,6 +10,7 @@ from utils import *
 load_dotenv(dotenv_path=".env")
 TOKEN = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
+# command *
 bot = commands.Bot(command_prefix='*')
 
 
@@ -363,6 +364,12 @@ async def on_voice_state_update(member, before, after):
             g_guild_tab[guild.id]["created"][created_chan.id]["creator"] = member.id
             g_guild_tab[guild.id]["created"][created_chan.id]["title"] = channel_name_pattern
             await member.move_to(created_chan)
+
+            if "child_chan_txt" in channel_info.keys():
+                if channel_info["child_chan_txt"] is True:
+                    txt_created_chan = await guild.create_text_channel(channel_name, category=cat)
+                    g_guild_tab[guild.id]["created"][created_chan.id]["perso_txt_chan_id"] = txt_created_chan.id
+
         else:
             print("role not ok : leave")
             #TODO if connected before, go to before chan
@@ -392,7 +399,7 @@ async def on_voice_state_update(member, before, after):
             print(f"del voice chan ")
             if "delay" in parent_info.keys():
                 print(f"wait {parent_info['delay']} seconds")
-                await asyncio.sleep(parent_info['delay'])
+                await asyncio.sleep(parent_info['delay']) #TODO bug si l'auteur part revient et repart avant la fin du premier timer
                 #si après x seondes, le proprio n'est pas revenue dans le chan, ne pas del le chan
                 if current_info["creator"] in get_values(before.channel, "members", "id"):
                     print("still in")
@@ -422,7 +429,11 @@ async def on_voice_state_update(member, before, after):
                         await getChanFromId(guild, current_info["perso_txt_chan_id"]).delete()  # change this later
                     except:
                         print("skip delete chan")
-            del g_guild_tab[guild.id]["created"][before.channel.id]
+            try :
+                del g_guild_tab[guild.id]["created"][before.channel.id]
+                print(" python struct del ok")
+            except :
+                print("skip python struct del")
         #si le canal ne doit pas ce detruire quand le createur part
         elif to_del is False and member.id == current_info["creator"]:
             # choisi un nouveau créateur et renome le canal
