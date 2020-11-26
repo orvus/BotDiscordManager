@@ -182,7 +182,7 @@ async def del_named_chan(ctx, channel_id : int, *to_del):
             print(elt, g_guild_tab[guild.id]["fork"][channel_id]["childs_names_list"])
             if elt in g_guild_tab[guild.id]["fork"][channel_id]["childs_names_list"]:
                 g_guild_tab[guild.id]["fork"][channel_id]["nb_name_pattern"] -= 1
-                g_guild_tab[guild.id]["fork"][channel_id]["phrases"].remove(elt)
+                g_guild_tab[guild.id]["fork"][channel_id]["childs_names_list"].remove(elt)
         save(g_guild_tab,"g_guild_tab")
         await ctx.send("textes supprimé")
 
